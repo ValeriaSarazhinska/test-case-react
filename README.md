@@ -1,4 +1,4 @@
-## React + Redux test case
+## React test case
 
 * **Test case v2.docx** - documentation
 * **data.csv** - file with data
