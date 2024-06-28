@@ -1,4 +1,4 @@
-import {ChangeEvent, Dispatch, FC, SetStateAction, useState} from "react";
+import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
 import Papa from "papaparse";
 import {
 	Button,
@@ -13,7 +13,7 @@ import {
 	useDisclosure,
 	useToast,
 } from "@chakra-ui/react";
-import {Transaction, TransactionColumns} from "../types";
+import { Transaction, TransactionColumns } from "../types";
 
 interface ImportTransactionsModalProps {
 	setTransactions: Dispatch<SetStateAction<Transaction[]>>;
@@ -38,7 +38,7 @@ export const ImportTransactionsModal: FC<ImportTransactionsModalProps> = ({
 		const headers = Object.keys(data[0]);
 		const requiredHeaders = Object.values(TransactionColumns);
 
-		return requiredHeaders.every(header => headers.includes(header));
+		return requiredHeaders.every((header) => headers.includes(header));
 	};
 
 	const handleImport = () => {
@@ -119,6 +119,7 @@ export const ImportTransactionsModal: FC<ImportTransactionsModalProps> = ({
 							colorScheme="teal"
 							variant="outline"
 							size="md"
+							isDisabled={!file}
 							onClick={handleImport}
 						>
 							Import

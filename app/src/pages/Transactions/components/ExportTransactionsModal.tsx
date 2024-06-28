@@ -14,7 +14,6 @@ import {
 import { FC, useState } from "react";
 import { ExportColumns, Transaction } from "../types";
 import { CSVLink } from "react-csv";
-import {StyledButton} from "../../../shared/Buttons/StyledButton.tsx";
 
 interface ExportTransactionsModalProps {
 	transactions: Transaction[];
@@ -123,7 +122,6 @@ export const ExportTransactionsModal: FC<ExportTransactionsModalProps> = ({
 								Export
 							</Button>
 						</CSVLink>
-
 					</ModalFooter>
 				</ModalContent>
 			</Modal>

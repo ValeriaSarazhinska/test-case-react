@@ -1,53 +1,25 @@
-import { Box, Select, Stack, Wrap, WrapItem } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import { Box, Stack, Text, Wrap, WrapItem } from "@chakra-ui/react";
+import { useState } from "react";
 import {
 	ExportTransactionsModal,
 	ImportTransactionsModal,
 	TransactionsTable,
 } from "./components";
-import { Transaction } from "./types";
+import { StatusOptions, Transaction, TypeOptions } from "./types";
 
-enum StatusOptions {
-	Pending = "Pending",
-	Completed = "Completed",
-	Cancelled = "Cancelled",
-}
-
-enum TypeOptions {
-	Refill = "Refill",
-	Withdrawal = "Withdrawal",
-}
-
-interface CustomSelectProps {
-	placeholder: string;
-	options: Record<string, string>;
-	onChange: (value: string) => void;
-	width?: string;
-}
+import { TablePagination } from "../../shared/TablePagination/TablePagination.tsx";
+import { CustomSelect } from "../../shared/CustomSelect/CustomSelect.tsx";
+import { usePagination } from "../../hooks/usePagination.tsx";
 
 export const Transactions = () => {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 	const [statusFilter, setStatusFilter] = useState<string | null>(null);
 	const [typeFilter, setTypeFilter] = useState<string | null>(null);
+	const statusOptions = Object.keys(StatusOptions);
+	const typeOptions = Object.keys(TypeOptions);
 
-	const CustomSelect: FC<CustomSelectProps> = ({
-		placeholder,
-		options,
-		onChange,
-		width = "50%",
-	}) => (
-		<Select
-			placeholder={placeholder}
-			width={width}
-			onChange={(e) => onChange(e.target.value)}
-		>
-			{Object.keys(options).map((key) => (
-				<option key={key} value={key}>
-					{options[key as keyof typeof options]}
-				</option>
-			))}
-		</Select>
-	);
+	const handleStatusChange = (status: string) => setStatusFilter(status);
+	const handleTypeChange = (type: string) => setTypeFilter(type);
 
 	const filteredTransactions = transactions.filter((transaction) => {
 		return (
@@ -55,6 +27,19 @@ export const Transactions = () => {
 			(!typeFilter || transaction.type === typeFilter)
 		);
 	});
+
+	const {
+		currentPage,
+		itemsPerPage,
+		setPage,
+		setItemsPerPage,
+		paginatedItems,
+		totalPages,
+	} = usePagination<Transaction>(filteredTransactions);
+
+	const handlePageChange = (page: number) => setPage(page);
+	const handleItemsPerPageChange = (perPage: number) =>
+		setItemsPerPage(perPage);
 
 	return (
 		<>
@@ -68,13 +53,13 @@ export const Transactions = () => {
 				<Box display="flex" gap={5}>
 					<CustomSelect
 						placeholder="Status"
-						options={StatusOptions}
-						onChange={setStatusFilter}
+						options={statusOptions}
+						onChange={handleStatusChange}
 					/>
 					<CustomSelect
 						placeholder="Type"
-						options={TypeOptions}
-						onChange={setTypeFilter}
+						options={typeOptions}
+						onChange={handleTypeChange}
 					/>
 				</Box>
 				<Box>
@@ -88,7 +73,20 @@ export const Transactions = () => {
 					</Wrap>
 				</Box>
 			</Stack>
-			<TransactionsTable transactions={filteredTransactions} />
+			{paginatedItems.length ? (
+				<>
+					<TransactionsTable transactions={paginatedItems} />
+					<TablePagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={handlePageChange}
+						itemsPerPage={itemsPerPage}
+						onItemsPerPageChange={handleItemsPerPageChange}
+					/>
+				</>
+			) : (
+				<Text>No Data</Text>
+			)}
 		</>
 	);
 };
