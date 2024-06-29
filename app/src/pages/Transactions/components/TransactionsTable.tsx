@@ -14,15 +14,14 @@ import { FC } from "react";
 import { Transaction } from "../types";
 import { EditTransactionsModal } from "./EditTransactionsModal.tsx";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog.tsx";
+import { useDeleteTransaction } from "../mutations";
 
 interface TransactionsTableProps {
 	transactions: Transaction[];
-	onUpdateTransaction: (transaction: Transaction) => void;
-	onDeleteTransaction: (transactionId: string) => void;
 }
 
 export const TransactionsTable: FC<TransactionsTableProps> = ({
-	transactions,onUpdateTransaction, onDeleteTransaction
+	transactions,
 }) => {
 	return (
 		<TableContainer>
@@ -51,15 +50,12 @@ export const TransactionsTable: FC<TransactionsTableProps> = ({
 								<Wrap spacing={4}>
 									<WrapItem>
 										<EditTransactionsModal
-											transaction={transaction}
-											onUpdate={onUpdateTransaction}
+											transactionId={transaction.id}
+											transactionStatus={transaction.status}
 										/>
 									</WrapItem>
 									<WrapItem>
-										<DeleteConfirmationDialog
-											transactionId={transaction.id}
-											onDelete={onDeleteTransaction}
-										/>
+										<DeleteConfirmationDialog transactionId={transaction.id} />
 									</WrapItem>
 								</Wrap>
 							</Td>

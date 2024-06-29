@@ -1,6 +1,13 @@
-import { createBrowserRouter, Outlet } from "react-router-dom";
-import { Transactions } from "../pages/Transactions";
-import { Navigation } from "../shared/Navigation";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { ProtectedRoute } from "./ProtectedRoute.tsx";
+import { Spinner } from "@chakra-ui/react";
+
+const Auth = lazy(() => import("../pages/Auth/Auth.tsx"));
+const Transactions = lazy(
+	() => import("../pages/Transactions/Transactions.tsx"),
+);
+const Navigation = lazy(() => import("../shared/Navigation/Navigation.tsx"));
 
 const AppLayout = () => {
 	return (
@@ -11,18 +18,30 @@ const AppLayout = () => {
 	);
 };
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
+	{
+		path: "/auth",
+		element: <Auth />,
+	},
 	{
 		element: <AppLayout />,
 		children: [
 			{
 				path: "/",
-				element: <Transactions />,
+				element: <ProtectedRoute element={Transactions} />,
 			},
 			{
 				path: "/transactions",
-				element: <Transactions />,
+				element: <ProtectedRoute element={Transactions} />,
 			},
 		],
 	},
 ]);
+
+export const AppRoute = () => {
+	return (
+		<Suspense fallback={<Spinner size="xl" />}>
+			<RouterProvider router={router} />
+		</Suspense>
+	);
+};

@@ -1,7 +1,7 @@
 import { Breadcrumb, BreadcrumbItem } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
-export const Navigation = () => {
+const Navigation = () => {
 	return (
 		<Breadcrumb>
 			<BreadcrumbItem>
@@ -13,3 +13,5 @@ export const Navigation = () => {
 		</Breadcrumb>
 	);
 };
+
+export default Navigation;

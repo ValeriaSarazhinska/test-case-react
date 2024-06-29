@@ -1,5 +1,13 @@
-import {Box, Input, Stack, Text, Wrap, WrapItem} from "@chakra-ui/react";
-import {ChangeEvent, useState} from "react";
+import {
+	Box,
+	Input,
+	Spinner,
+	Stack,
+	Text,
+	Wrap,
+	WrapItem,
+} from "@chakra-ui/react";
+import { ChangeEvent, useState } from "react";
 import {
 	ExportTransactionsModal,
 	ImportTransactionsModal,
@@ -9,9 +17,10 @@ import { StatusOptions, Transaction, TypeOptions } from "./types";
 import { TablePagination } from "../../shared/TablePagination";
 import { CustomSelect } from "../../shared/CustomSelect";
 import { usePagination } from "../../hooks";
+import { getTransactions } from "../../api";
+import { useQuery } from "react-query";
 
-export const Transactions = () => {
-	const [transactions, setTransactions] = useState<Transaction[]>([]);
+const Transactions = () => {
 	const [statusFilter, setStatusFilter] = useState<string | null>(null);
 	const [typeFilter, setTypeFilter] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState<string>("");
@@ -23,11 +32,16 @@ export const Transactions = () => {
 	const handleSearchQueryChange = (event: ChangeEvent<HTMLInputElement>) =>
 		setSearchQuery(event.target.value.toLowerCase());
 
+	const { data: transactions = [], isLoading } = useQuery({
+		queryKey: ["transactions"],
+		queryFn: getTransactions,
+	});
+
 	const filteredTransactions = transactions.filter((transaction) => {
 		return (
 			(!statusFilter || transaction.status === statusFilter) &&
 			(!typeFilter || transaction.type === typeFilter) &&
-			(transaction.clientName.toLowerCase().includes(searchQuery))
+			transaction.clientName.toLowerCase().includes(searchQuery)
 		);
 	});
 
@@ -40,25 +54,11 @@ export const Transactions = () => {
 		totalPages,
 	} = usePagination<Transaction>(filteredTransactions);
 
-	const handleUpdateTransaction = (updatedTransaction: Transaction) => {
-		setTransactions((prevTransactions) =>
-			prevTransactions.map((t) =>
-				t.id === updatedTransaction.id ? updatedTransaction : t,
-			),
-		);
-	};
-
-	const handleDeleteTransaction = (selectedTransactionId: string) => {
-		setTransactions((prevTransactions) =>
-			prevTransactions.filter(
-				(t) => Number(t.id) !== Number(selectedTransactionId),
-			),
-		);
-	};
-
 	const handlePageChange = (page: number) => setPage(page);
 	const handleItemsPerPageChange = (perPage: number) =>
 		setItemsPerPage(perPage);
+
+	if (isLoading) return <Spinner size="xl" />;
 
 	return (
 		<>
@@ -89,7 +89,7 @@ export const Transactions = () => {
 				<Box>
 					<Wrap spacing={4}>
 						<WrapItem>
-							<ImportTransactionsModal setTransactions={setTransactions} />
+							<ImportTransactionsModal />
 						</WrapItem>
 						<WrapItem>
 							<ExportTransactionsModal transactions={filteredTransactions} />
@@ -99,11 +99,7 @@ export const Transactions = () => {
 			</Stack>
 			{paginatedItems.length ? (
 				<>
-					<TransactionsTable
-						transactions={paginatedItems}
-						onUpdateTransaction={handleUpdateTransaction}
-						onDeleteTransaction={handleDeleteTransaction}
-					/>
+					<TransactionsTable transactions={paginatedItems} />
 
 					<TablePagination
 						currentPage={currentPage}
@@ -119,3 +115,5 @@ export const Transactions = () => {
 		</>
 	);
 };
+
+export default Transactions;

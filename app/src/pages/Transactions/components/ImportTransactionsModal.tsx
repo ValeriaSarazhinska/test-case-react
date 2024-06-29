@@ -1,5 +1,5 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
-import Papa from "papaparse";
+import { ChangeEvent, useState } from "react";
+
 import {
 	Button,
 	Input,
@@ -11,20 +11,20 @@ import {
 	ModalHeader,
 	ModalOverlay,
 	useDisclosure,
-	useToast,
 } from "@chakra-ui/react";
-import { Transaction, TransactionColumns } from "../types";
+import { importTransactionsFromFile } from "../../../helpers";
+import { useImportTransactions } from "../mutations";
+import { useCustomToast } from "../../../hooks";
 
-interface ImportTransactionsModalProps {
-	setTransactions: Dispatch<SetStateAction<Transaction[]>>;
-}
-
-export const ImportTransactionsModal: FC<ImportTransactionsModalProps> = ({
-	setTransactions,
-}) => {
+export const ImportTransactionsModal = () => {
+	const { showSuccess, showError } = useCustomToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [file, setFile] = useState<File | null>(null);
-	const toast = useToast();
+
+	const { mutateAsync: importTransactions, isLoading } =
+		useImportTransactions();
+
+	const importDisabled = !file || isLoading;
 
 	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files) {
@@ -32,58 +32,21 @@ export const ImportTransactionsModal: FC<ImportTransactionsModalProps> = ({
 		}
 	};
 
-	const validateCSV = (data: Transaction[]): boolean => {
-		if (data.length === 0) return false;
-
-		const headers = Object.keys(data[0]);
-		const requiredHeaders = Object.values(TransactionColumns);
-
-		return requiredHeaders.every((header) => headers.includes(header));
-	};
-
-	const handleImport = () => {
-		if (file) {
-			Papa.parse(file, {
-				header: true,
-				complete: (results: Transaction) => {
-					const data = results.data.map((transaction: any) => ({
-						id: transaction.TransactionId,
-						status: transaction.Status,
-						type: transaction.Type,
-						clientName: transaction.ClientName,
-						amount: transaction.Amount,
-					})) as Transaction[];
-					if (validateCSV(data)) {
-						setTransactions(data);
-						toast({
-							title: "Import successful.",
-							description: "Transactions have been imported successfully.",
-							status: "success",
-							duration: 5000,
-							isClosable: true,
-						});
-						onClose();
-					} else {
-						toast({
-							title: "Import failed.",
-							description:
-								"CSV format is incorrect. Please check the file and try again.",
-							status: "error",
-							duration: 5000,
-							isClosable: true,
-						});
-					}
-				},
-				error: (error: Error) => {
-					toast({
-						title: "Import failed.",
-						description: `An error occurred while parsing the file: ${error.message}`,
-						status: "error",
-						duration: 5000,
-						isClosable: true,
-					});
-				},
-			});
+	const handleImport = async () => {
+		try {
+			const transactions = await importTransactionsFromFile(file);
+			await importTransactions(transactions);
+			showSuccess(
+				"Import successful.",
+				"Transactions have been imported successfully.",
+			);
+		} catch (error) {
+			showError(
+				"Import failed.",
+				`An error occurred while parsing the file: ${error.message}`,
+			);
+		} finally {
+			onClose();
 		}
 	};
 
@@ -119,7 +82,7 @@ export const ImportTransactionsModal: FC<ImportTransactionsModalProps> = ({
 							colorScheme="teal"
 							variant="outline"
 							size="md"
-							isDisabled={!file}
+							isDisabled={importDisabled}
 							onClick={handleImport}
 						>
 							Import
