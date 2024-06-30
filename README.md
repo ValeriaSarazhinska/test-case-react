@@ -1,6 +1,6 @@
 ## React test case
 
-* **Test case v2.docx** - documentation
-* **data.csv** - file with data
+* **npm i
+* **npm run dev
+* **fake auth: login -> test; password -> test
 
-![alt text](https://raw.githubusercontent.com/emleonid/test-case-react/master/transactions.png "")
