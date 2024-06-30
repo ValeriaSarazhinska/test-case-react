@@ -12,7 +12,7 @@ import {
 	useDisclosure,
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
-import { ExportColumns, Transaction } from "../types";
+import {ExportColumns, Transaction, TransactionColumns} from "../types";
 import { CSVLink } from "react-csv";
 
 interface ExportTransactionsModalProps {
@@ -44,16 +44,16 @@ export const ExportTransactionsModal: FC<ExportTransactionsModalProps> = ({
 	};
 
 	const csvData = transactions.map((transaction) => {
-		const data: Record<string, any> = {};
-		columnsToExport.forEach((column) => {
+		const data: Record<string, string> = {};
+		for (const column of columnsToExport) {
 			data[column] = transaction[column as keyof Transaction];
-		});
+		}
 		return data;
 	});
 
 	const toggleSelectAll = () => {
 		const newExportColumns = Object.keys(exportColumns).reduce((acc, key) => {
-			acc[key as keyof ExportColumns] = !allChecked;
+			acc[key as TransactionColumns] = !allChecked;
 			return acc;
 		}, {} as ExportColumns);
 		setExportColumns(newExportColumns);

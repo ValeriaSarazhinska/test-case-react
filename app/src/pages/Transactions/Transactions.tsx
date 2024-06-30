@@ -3,9 +3,9 @@ import {
 	Input,
 	Spinner,
 	Stack,
-	Text,
 	Wrap,
 	WrapItem,
+	Image
 } from "@chakra-ui/react";
 import { ChangeEvent, useState } from "react";
 import {
@@ -19,6 +19,7 @@ import { CustomSelect } from "../../shared/CustomSelect";
 import { usePagination } from "../../hooks";
 import { getTransactions } from "../../api";
 import { useQuery } from "react-query";
+import noDataImage from '../../assets/no-data.jpg';
 
 const Transactions = () => {
 	const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -66,6 +67,7 @@ const Transactions = () => {
 				display="flex"
 				flexDirection="row"
 				justifyContent="space-between"
+				gap={5}
 				mb={5}
 				mt={5}
 			>
@@ -110,7 +112,13 @@ const Transactions = () => {
 					/>
 				</>
 			) : (
-				<Text>No Data</Text>
+				<Stack
+					display="flex"
+					flexDirection="row"
+					justifyContent="center"
+				>
+				<Image boxSize='200px' objectFit='cover' src={noDataImage} alt="No Data"/>
+				</Stack>
 			)}
 		</>
 	);

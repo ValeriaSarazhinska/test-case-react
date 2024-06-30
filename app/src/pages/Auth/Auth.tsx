@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
+import {Center} from "@chakra-ui/react";
 
 const Container = styled.div`
     display: flex;
@@ -45,6 +46,7 @@ const Auth = () => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const navigate = useNavigate();
+
 	const handleLogin = () => {
 		if (username && password) {
 			const token = btoa(`${username}:${password}`);
@@ -56,6 +58,7 @@ const Auth = () => {
 	};
 
 	return (
+		<Center h='100vh'>
 		<Container>
 			{error && <ErrorMessage>{error}</ErrorMessage>}
 			<StyledInput
@@ -71,6 +74,7 @@ const Auth = () => {
 			/>
 			<StyledButton onClick={handleLogin}>Login</StyledButton>
 		</Container>
+		</Center>
 	);
 };
 

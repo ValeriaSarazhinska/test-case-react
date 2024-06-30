@@ -14,7 +14,7 @@ class DatabaseService {
 			this.createTransactionsTable();
 
 			return this.db;
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Failed to initialize the database", err);
 			return null;
 		}
@@ -40,7 +40,7 @@ class DatabaseService {
 		return this.db;
 	}
 
-	public getAllTransactions(): any[] | null {
+	public getAllTransactions(): Transaction[] | null {
 		if (!this.db) return [];
 
 		const sqlStatement = `SELECT * FROM transactions;`;

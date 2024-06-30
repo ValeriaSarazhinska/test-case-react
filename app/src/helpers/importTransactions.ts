@@ -1,6 +1,14 @@
 import { Transaction, TransactionColumns } from "../pages/Transactions/types";
 import Papa from "papaparse";
 
+interface ParsedTransaction {
+	TransactionId: string;
+	Status: string;
+	Type: string;
+	ClientName: string;
+	Amount: string;
+}
+
 const validateCSV = (data: Transaction[]): boolean => {
 	if (data.length === 0) return false;
 
@@ -22,13 +30,15 @@ export const importTransactionsFromFile = (
 		Papa.parse(file, {
 			header: true,
 			complete: (results: Papa.ParseResult<Transaction>) => {
-				const data = results.data.map((transaction: any) => ({
-					id: transaction.TransactionId,
-					status: transaction.Status,
-					type: transaction.Type,
-					clientName: transaction.ClientName,
-					amount: transaction.Amount,
-				})) as Transaction[];
+				const data = results.data.map(
+					(transaction: ParsedTransaction) => ({
+						id: transaction.TransactionId,
+						status: transaction.Status,
+						type: transaction.Type,
+						clientName: transaction.ClientName,
+						amount: transaction.Amount,
+					}),
+				) as Transaction[];
 
 				if (validateCSV(data)) {
 					resolve(data);
