@@ -30,15 +30,13 @@ export const importTransactionsFromFile = (
 		Papa.parse(file, {
 			header: true,
 			complete: (results: Papa.ParseResult<Transaction>) => {
-				const data = results.data.map(
-					(transaction: ParsedTransaction) => ({
-						id: transaction.TransactionId,
-						status: transaction.Status,
-						type: transaction.Type,
-						clientName: transaction.ClientName,
-						amount: transaction.Amount,
-					}),
-				) as Transaction[];
+				const data = results.data.map((transaction: ParsedTransaction) => ({
+					id: transaction.TransactionId,
+					status: transaction.Status,
+					type: transaction.Type,
+					clientName: transaction.ClientName,
+					amount: transaction.Amount,
+				})) as Transaction[];
 
 				if (validateCSV(data)) {
 					resolve(data);

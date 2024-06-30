@@ -12,7 +12,7 @@ import {
 	useDisclosure,
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
-import {ExportColumns, Transaction, TransactionColumns} from "../types";
+import { ExportColumns, Transaction, TransactionColumns } from "../types";
 import { CSVLink } from "react-csv";
 
 interface ExportTransactionsModalProps {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
-import {Center} from "@chakra-ui/react";
+import { Center } from "@chakra-ui/react";
 
 const Container = styled.div`
     display: flex;
@@ -58,22 +58,22 @@ const Auth = () => {
 	};
 
 	return (
-		<Center h='100vh'>
-		<Container>
-			{error && <ErrorMessage>{error}</ErrorMessage>}
-			<StyledInput
-				placeholder="Username"
-				value={username}
-				onChange={(e) => setUsername(e.target.value)}
-			/>
-			<StyledInput
-				placeholder="Password"
-				type="password"
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
-			/>
-			<StyledButton onClick={handleLogin}>Login</StyledButton>
-		</Container>
+		<Center h="100vh">
+			<Container>
+				{error && <ErrorMessage>{error}</ErrorMessage>}
+				<StyledInput
+					placeholder="Username"
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
+				/>
+				<StyledInput
+					placeholder="Password"
+					type="password"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+				/>
+				<StyledButton onClick={handleLogin}>Login</StyledButton>
+			</Container>
 		</Center>
 	);
 };
